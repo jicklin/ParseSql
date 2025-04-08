@@ -4,9 +4,14 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.java.PsiLiteralExpressionImpl;
+import io.ktor.http.content.TextContent;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
@@ -33,7 +38,7 @@ public class ParseMybatisAction extends AnAction {
 
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
-        return super.getActionUpdateThread();
+        return ActionUpdateThread.BGT;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class ParseMybatisAction extends AnAction {
 
         String emptySql = createFakeSql(sqlContent);
 
-        showAnnotationsWithCopy(e.getProject(), emptySql);
+        showAnnotationsWithCopyAsync(e.getProject(), emptySql);
     }
 
     private String createFakeSql(String sqlContent) {
@@ -179,5 +184,27 @@ public class ParseMybatisAction extends AnAction {
 
         JOptionPane.showMessageDialog(null, panel, "Pure SQL *YoYo*", JOptionPane.PLAIN_MESSAGE);
     }
+
+
+    private void showAnnotationsWithCopyAsync(Project project, String content) {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            JPanel panel = new JPanel(new BorderLayout());
+
+            JTextArea textArea = new JTextArea(content);
+            textArea.setEditable(false);
+            panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+            JButton copyButton = new JButton("Copy to Clipboard");
+            copyButton.addActionListener(e -> {
+                StringSelection selection = new StringSelection(content);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, null);
+            });
+            panel.add(copyButton, BorderLayout.SOUTH);
+
+            JOptionPane.showMessageDialog(null, panel, "Pure SQL *YoYo*", JOptionPane.PLAIN_MESSAGE);
+        });
+    }
+
 
 }
