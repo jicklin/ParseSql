@@ -187,23 +187,30 @@ public class ParseMybatisAction extends AnAction {
 
 
     private void showAnnotationsWithCopyAsync(Project project, String content) {
-        ApplicationManager.getApplication().invokeLater(() -> {
-            JPanel panel = new JPanel(new BorderLayout());
 
-            JTextArea textArea = new JTextArea(content);
-            textArea.setEditable(false);
-            panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
-            JButton copyButton = new JButton("Copy to Clipboard");
-            copyButton.addActionListener(e -> {
-                StringSelection selection = new StringSelection(content);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, null);
+        // 使用正确的阻塞方式
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+
+            ApplicationManager.getApplication().invokeLater(() -> {
+                JPanel panel = new JPanel(new BorderLayout());
+
+                JTextArea textArea = new JTextArea(content);
+                textArea.setEditable(false);
+                panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+                JButton copyButton = new JButton("Copy to Clipboard");
+                copyButton.addActionListener(e -> {
+                    StringSelection selection = new StringSelection(content);
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(selection, null);
+                });
+                panel.add(copyButton, BorderLayout.SOUTH);
+
+                JOptionPane.showMessageDialog(null, panel, "Pure SQL *YoYo*", JOptionPane.PLAIN_MESSAGE);
             });
-            panel.add(copyButton, BorderLayout.SOUTH);
-
-            JOptionPane.showMessageDialog(null, panel, "Pure SQL *YoYo*", JOptionPane.PLAIN_MESSAGE);
         });
+
     }
 
 
