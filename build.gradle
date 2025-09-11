@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.marry.mysql.plugin"
-version = "1.2-SNAPSHOT"
+version = "1.4"
 
 sourceCompatibility = 1.8
 jar.enabled = true
@@ -22,7 +22,7 @@ dependencies {
 
 // 这里是很重要的配置，定义了gradle构建时依赖的idea版本，我们进行插件调试的时候，会使用这里定义的idea版本来进行测试的。
 intellij {
-    version.set("2024.2.5")
+    version.set("2025.1")
     type.set("IC") // Target IDE Platform
 
     plugins.set(['java'])
@@ -31,5 +31,5 @@ intellij {
 patchPluginXml {
     //注意这个版本号不能高于上面intellij的version,否则runIde会报错
     sinceBuild = '222'
-    untilBuild = '242.*'
+    untilBuild = '251.*'
 }
