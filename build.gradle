@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.marry.mysql.plugin"
-version = "1.4"
+version = "1.4.1"
 
 sourceCompatibility = 1.8
 jar.enabled = true
@@ -31,5 +31,5 @@ intellij {
 patchPluginXml {
     //注意这个版本号不能高于上面intellij的version,否则runIde会报错
     sinceBuild = '222'
-    untilBuild = '251.*'
+    untilBuild = '253.*'
 }
