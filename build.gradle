@@ -1,10 +1,10 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.13.3"
+    id("org.jetbrains.intellij") version "1.17.4"
 }
 
 group = "com.marry.mysql.plugin"
-version = "1.4.1"
+version = "1.4.2"
 
 sourceCompatibility = 1.8
 jar.enabled = true
@@ -24,12 +24,22 @@ dependencies {
 intellij {
     version.set("2025.1")
     type.set("IC") // Target IDE Platform
-
     plugins.set(['java'])
 }
 
 patchPluginXml {
-    //注意这个版本号不能高于上面intellij的version,否则runIde会报错
     sinceBuild = '222'
-    untilBuild = '253.*'
+    untilBuild.set(provider { null })
+}
+
+// 禁用 buildSearchableOptions：该任务会启动一个 headless IDE 扫描 Settings 面板。
+// 本插件没有任何 Configurable/Settings，启动后平台内部 DialogPanel 创建的
+// Disposable 无法正常清理，导致 "Memory leak detected" 报错。
+tasks.named("buildSearchableOptions") {
+    enabled = false
+}
+
+// 开发调试时额外抑制 Disposer 泄漏断言（可选，作为双重保险）
+tasks.named("runIde") {
+    jvmArgs("-Didea.disposer.debug=none")
 }
